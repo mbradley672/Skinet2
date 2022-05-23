@@ -16,6 +16,8 @@ export class BasketService {
   private basketTotalSource = new BehaviorSubject<IBasketTotals>(null);
   basketTotal$ = this.basketTotalSource.asObservable();
 
+
+
   constructor(private http: HttpClient) { }
 
   getBasket(id :String) {
@@ -45,6 +47,23 @@ export class BasketService {
     const basket = this.getCurrentBasketValue() ?? this.createBasket();
     basket.items = this.addOrUpdateItem(basket.items,itemToAdd,quantity);
     this.setBasket(basket);
+  }
+
+  incrementItemQuantity(item: IBasketItem){
+    const basket = this.getCurrentBasketValue();
+    const foundItemIndex = basket.items.findIndex(x=>x.id === item.id);
+    basket.items[foundItemIndex].quantity++;
+    this.setBasket(basket);
+  }
+
+  decrementItemQuantity(item: IBasketItem){
+    const basket = this.getCurrentBasketValue();
+    const foundItemIndex = basket.items.findIndex(x=>x.id === item.id);
+    if(basket.items[foundItemIndex].quantity > 1) {
+      basket.items[foundItemIndex].quantity--;
+    } else {
+      this.removeItemFromBasket(item);
+    }
   }
 
   private calculateTotals(){
@@ -84,5 +103,27 @@ export class BasketService {
       items[index].quantity += quantity;
     }
     return items;
+  }
+
+  removeItemFromBasket(item: IBasketItem) {
+    const basket = this.getCurrentBasketValue();
+    if(basket.items.some(x => x.id === item.id)) {
+      basket.items = basket.items.filter(i => i.id !== item.id);
+      if (basket.items.length > 0) {
+        this.setBasket(basket);
+      } else {
+        this.deleteBasket(basket);
+      }
+    }
+  }
+
+  private deleteBasket(basket: IBasket) {
+    return this.http.delete(this.baseUrl + 'basket?id=' +basket.id).subscribe(() => {
+      this.basketSource.next(null);
+      this.basketTotalSource.next(null);
+      localStorage.removeItem('basked_id');
+    }, error =>{
+      console.log(error);
+    });
   }
 }
