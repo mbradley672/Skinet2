@@ -1,0 +1,17 @@
+<div class="d-flex flex-column flex-md-row align-items-center justify-content-between p-3 px-md-4 mb-3 bg-light border-bottom shadow-sm fixed-top bg-primary">
+  <img src="/assets/images/logo.png" style="max-height: 70px;" alt="Logo" [routerLink]="['/']" class="logo">
+  <nav class="my-2 my-md-0 me-md-3 text-uppercase" style="font-size: larger;">
+    <a class="p-2" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+    <a class="p-2" [routerLink]="['/shop']" routerLinkActive="active">Shop</a>
+    <a class="p-2" [routerLink]="['/test-error']" routerLinkActive="active">Error</a>
+  </nav>
+  <div class="d-flex align-items-center">
+    <a style="position: relative;" routerLink="/basket">
+      <i class="fa fa-shopping-cart fa-2x me-5 text-dark">
+        <div *ngIf="(basket$ | async) as basket" class="cart-no">{{basket.items.length}}</div>
+      </i>
+    </a>
+    <a class="btn btn-outline-secondary me-2" href="#">Login</a>
+    <a class="btn btn-outline-secondary me-3" href="#">Sign Up</a>
+  </div>
+</div>
